@@ -190,6 +190,7 @@ function displayInfoTable(tableObject, infoMatrix, rowIndex, infoStartColIndex) 
     tableObject.append(row2);
 }
 
+// Still working on this function
 // function allocatedSeatClickHandler(e) {
 //     var selectedID = e.target.getAttribute("id");
 //     $("table button").removeClass("selected");
