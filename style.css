@@ -17,6 +17,16 @@ body {
     /*align-self: center;*/
 }
 
+#credit {
+    font-size: 0.8em;
+    color: grey;
+    margin: 10px 10px 0 10px;
+}
+
+#credit a {
+    text-decoration: none;
+}
+
 button.hasHistory {
     background-color: #807f16;
     color: white;
