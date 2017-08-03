@@ -1,5 +1,3 @@
-// Simply to test github anyway.
-
 var type = "6";
 var rowTag = [];
 var colTag = [];
@@ -13,6 +11,8 @@ var passengerMatrix = [];
 var allocationMatrix = [];
 
 $(document).ready(function() {
+    $("#selected_passenger_information").find("table").attr("align", "center");
+
     $("#file_input_button").on("click", function() {
         type = $("input[name='type']:checked").attr("id");
         $("#file_input").click();
@@ -176,6 +176,19 @@ function historySeatClickHandler(e) {
             getId(allocationMatrix[allocationRowIndex][2],
                 allocationMatrix[allocationRowIndex][3]) + "']").addClass("selected");
     }
+
+    var relationMatrixPIDCol = relationMatrix.map(function(value, index) {return value[0]});
+    var relationRowIndexes = getAllIndexes(relationMatrixPIDCol, selectedPid);
+    var selectedRelationTable = $("#selected_passenger_relation_table");
+    selectedRelationTable.html("");
+    if (relationRowIndexes.length > 0) {
+        var relationRow = $("<tr>");
+        relationRow.append($("<td>Related person</td>"));
+        for (var i = 0; i < relationRowIndexes.length; i++) {
+            relationRow.append($("<td>" + relationMatrix[relationRowIndexes[i]][1] + "</td>"));
+        }
+        selectedRelationTable.append(relationRow);
+    }
 }
 
 function displayInfoTable(tableObject, infoMatrix, rowIndex, infoStartColIndex) {
@@ -190,7 +203,14 @@ function displayInfoTable(tableObject, infoMatrix, rowIndex, infoStartColIndex) 
     tableObject.append(row2);
 }
 
-// Still working on this function
+function getAllIndexes(arr, val) {
+    var indexes = [], i = -1;
+    while ((i = arr.indexOf(val, i+1)) !== -1){
+        indexes.push(i);
+    }
+    return indexes;
+}
+
 // function allocatedSeatClickHandler(e) {
 //     var selectedID = e.target.getAttribute("id");
 //     $("table button").removeClass("selected");

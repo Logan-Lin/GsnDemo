@@ -65,20 +65,22 @@ button.selected {
 
 #selected_passenger_information_table,
 #selected_passenger_history_table,
-#selected_passenger_allocation_table {
+#selected_passenger_allocation_table,
+#selected_passenger_relation_table {
     border: 1px solid black;
     border-spacing: 0;
     text-align: center;
     margin-bottom: 15px;
 }
 
-#selected_passenger_allocation_table {
+#selected_passenger_relation_table {
     margin-bottom: 0;
 }
 
 #selected_passenger_information_table td,
 #selected_passenger_history_table td,
-#selected_passenger_allocation_table td{
+#selected_passenger_allocation_table td,
+#selected_passenger_relation_table td {
     border: 1px solid black;
     padding: 5px;
     margin: 0;
