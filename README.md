@@ -23,7 +23,7 @@
 
 感谢
 -------------------
-script.js中大量使用了[jquery](https://jquery.com/)库的代码，简化了DOM操作和按钮事件处理的分配。
+[script.js](/script.js)中大量使用了[jquery](https://jquery.com/)库的代码，简化了DOM操作和按钮事件处理的分配。
 
 选择文件的"Select"按钮使用了[CSS Button Generator](http://css3buttongenerator.com/)的样式。
 
