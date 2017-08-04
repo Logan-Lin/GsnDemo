@@ -19,8 +19,6 @@
 
 [data文件夹](/data)下有供测试的数据集，关于数据集的格式说明可以查看[data explanation.pdf](/data_explanation.pdf)。
 
-显示用户之间关系的画图模块仍未完成。
-
 感谢
 -------------------
 [script.js](/script.js)中大量使用了[jquery](https://jquery.com/)库的代码，简化了DOM操作和按钮事件处理的分配。

@@ -106,7 +106,7 @@ function initialSeatButtons() {
                 tableRow.append($("<td>||||</td>"));
             } else {
                 tableRow.append($("<td><button class='default'" + " id=" + id + ">"
-                    + "O</button></td>"));
+                    + " </button></td>"));
             }
         }
         originalSeatTable.append(tableRow);
@@ -128,10 +128,8 @@ function initialButtons() {
             historyMatrix[i][2] + "']");
         buttonObject.attr("class", "hasHistory").text("P");
         if (allocationPIDCol.indexOf(historyMatrix[i][0]) !== -1) {
-            buttonObject.addClass("hasData");
-            buttonObject.text(" ");
-            buttonObject.attr("style", "background-image:url("
-                + images[Number(historyMatrix[i][0]) % images.length] + ")");
+            buttonObject.addClass("hasData").attr("style", "background-image:url("
+                + images[Number(historyMatrix[i][0]) % images.length] + ")").text(" ");
         }
     }
 
@@ -198,6 +196,9 @@ function historySeatClickHandler(e) {
     var relationRowIndexes = getAllIndexes(relationMatrixPIDCol, selectedPid);
     var selectedRelationTable = $("#selected_passenger_relation_table");
     selectedRelationTable.html("");
+
+    var graphElement = document.getElementById("graph");
+    $(graphElement).html("");
     if (relationRowIndexes.length > 0) {
         var relationRow = $("<tr>");
         relationRow.append($("<td>Related person</td>"));
@@ -205,6 +206,35 @@ function historySeatClickHandler(e) {
             relationRow.append($("<td>" + relationMatrix[relationRowIndexes[i]][1] + "</td>"));
         }
         selectedRelationTable.append(relationRow);
+
+        var relationGraph = Viva.Graph.graph();
+        relationGraph.addNode(selectedPid, {url: images[Number(selectedPid) % images.length]});
+        for (var i = 0;i < relationRowIndexes.length; i++) {
+            var relatedPID = relationMatrix[relationRowIndexes[i]][1];
+            relationGraph.addNode(relatedPID,
+                {url: images[Number(relatedPID) % images.length]});
+            relationGraph.addLink(selectedPid, relatedPID);
+        }
+
+        var graphics = Viva.Graph.View.svgGraphics();
+        graphics.node(function(node) {
+            // The function is called every time renderer needs a ui to display node
+            return Viva.Graph.svg('image')
+                .attr('width', 50)
+                .attr('height', 50)
+                .link(node.data.url); // node.data holds custom object passed to graph.addNode();
+        })
+            .placeNode(function(nodeUI, pos){
+                // Shift image to let links go to the center:
+                nodeUI.attr('x', pos.x - 12).attr('y', pos.y - 12);
+            });
+
+        var renderer = Viva.Graph.View.renderer(relationGraph,
+            {
+                container: graphElement,
+                graphics: graphics
+            });
+        renderer.run();
     }
 }
 

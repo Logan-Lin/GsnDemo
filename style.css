@@ -54,6 +54,15 @@ button.selected {
     color: white;
 }
 
+#graph {
+    text-align: center;
+}
+
+svg {
+    width: 700px;
+    height: 400px;
+}
+
 #selected_passenger_information {
     margin-top: 0;
     margin-bottom: 10px;
