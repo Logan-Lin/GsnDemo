@@ -122,12 +122,13 @@ function initialSeatButtons() {
 
 function initialButtons() {
     var allocationPIDCol = allocationMatrix.map(function(value, index) {return value[0]});
+    var passengerPIDCol = passengerMatrix.map(function(value, index) {return value[0]});
 
     for (var i = 1; i < historyMatrix.length; i++) {
         var buttonObject = $("#original_seat").find("button[id='" +
             historyMatrix[i][2] + "']");
         buttonObject.attr("class", "hasHistory").text("P");
-        if (allocationPIDCol.indexOf(historyMatrix[i][0]) !== -1) {
+        if (Number(passengerMatrix[passengerPIDCol.indexOf(historyMatrix[i][0])][1]) !== 0) {
             buttonObject.addClass("hasData").attr("style", "background-image:url("
                 + images[Number(historyMatrix[i][0]) % images.length] + ")").text(" ");
         }
@@ -135,31 +136,13 @@ function initialButtons() {
 
     for (var i = 1; i < allocationMatrix.length; i++) {
         var id = getId(allocationMatrix[i][2], allocationMatrix[i][3]);
-        $("#arranged_seat").find("button[id='" + id + "']").attr("class", "hasData")
-            .attr("style", "background-image:url("
+        var buttonObject = $("#arranged_seat").find("button[id='" + id + "']");
+        buttonObject.attr("class", "hasHistory");
+        if (Number(passengerMatrix[passengerPIDCol.indexOf(allocationMatrix[i][0])]) !== 0) {
+            buttonObject.addClass("hasData").attr("style", "background-image:url("
                 + images[Number(allocationMatrix[i][0]) % images.length] + ")").text(" ");
+        }
     }
-}
-
-function getId(rowStr, colStr) {
-    var temColTag = [];
-    for (var i = 0; i < 3; i++) {
-        temColTag.push(colTag[i])
-    }
-    for (i = 4; i < colNum; i++) {
-        temColTag.push(colTag[i]);
-    }
-    return rowStr + "-" + temColTag[Number(colStr) - 1];
-}
-
-function processInfoMatrix(infoString) {
-    var lines = infoString.split("\n");
-    var infoMatrix = [];
-    infoMatrix.push(lines[0].substring(lines[0].indexOf(":") + 1).split(","));
-    for (var i = 1; i < lines.length; i++) {
-        infoMatrix.push(lines[i].split(","));
-    }
-    return infoMatrix;
 }
 
 function historySeatClickHandler(e) {
@@ -256,6 +239,27 @@ function getAllIndexes(arr, val) {
         indexes.push(i);
     }
     return indexes;
+}
+
+function getId(rowStr, colStr) {
+    var temColTag = [];
+    for (var i = 0; i < 3; i++) {
+        temColTag.push(colTag[i])
+    }
+    for (i = 4; i < colNum; i++) {
+        temColTag.push(colTag[i]);
+    }
+    return rowStr + "-" + temColTag[Number(colStr) - 1];
+}
+
+function processInfoMatrix(infoString) {
+    var lines = infoString.split("\n");
+    var infoMatrix = [];
+    infoMatrix.push(lines[0].substring(lines[0].indexOf(":") + 1).split(","));
+    for (var i = 1; i < lines.length; i++) {
+        infoMatrix.push(lines[i].split(","));
+    }
+    return infoMatrix;
 }
 
 // function allocatedSeatClickHandler(e) {
