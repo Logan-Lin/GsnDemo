@@ -28,3 +28,5 @@
 选择文件的"Select"按钮使用了[CSS Button Generator](http://css3buttongenerator.com/)的样式。
 
 绘制用户关系图的模块使用了[VivaGraph](https://github.com/anvaka/VivaGraphJS)。
+
+用户的头像是从GitHub上扒取的~
