@@ -27,6 +27,12 @@ body {
     text-decoration: none;
 }
 
+button {
+    background-color: #eaf3da;
+    background-size: 30px auto;
+    border-width: 3px;
+}
+
 button.hasHistory {
     background-color: #807f16;
     color: white;
@@ -43,7 +49,8 @@ button.default {
 }
 
 button.selected {
-    background-color: red;
+    /*background-color: red;*/
+    border: 3px solid red;
     color: white;
 }
 
@@ -58,8 +65,8 @@ button.selected {
 }
 
 #original_seat_table button, #arranged_seat_table button {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 7px;
 }
 

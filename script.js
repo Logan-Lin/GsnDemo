@@ -10,6 +10,21 @@ var historyMatrix = [];
 var passengerMatrix = [];
 var allocationMatrix = [];
 
+var images = ["https://avatars2.githubusercontent.com/u/1667267?v=4&s=460",
+    "https://avatars2.githubusercontent.com/u/2766936?v=4&s=460",
+    "https://avatars1.githubusercontent.com/u/1794099?v=4&s=460",
+    "https://avatars2.githubusercontent.com/u/1487073?v=4&s=460",
+    "https://avatars2.githubusercontent.com/u/4674940?v=4&s=460",
+    "https://avatars1.githubusercontent.com/u/981645?v=4&s=460",
+    "https://avatars1.githubusercontent.com/u/927168?v=4&s=460",
+    "https://avatars3.githubusercontent.com/u/1271349?v=4&s=460",
+    "https://avatars1.githubusercontent.com/u/467807?v=4&s=460",
+    "https://avatars0.githubusercontent.com/u/403637?v=4&s=460",
+    "https://avatars3.githubusercontent.com/u/9321270?v=4&s=460",
+    "https://avatars2.githubusercontent.com/u/11205194?v=4&s=460",
+    "https://avatars3.githubusercontent.com/u/13667174?v=4&s=460",
+    "https://avatars1.githubusercontent.com/u/13401724?v=4&s=460"];
+
 $(document).ready(function() {
     $("#selected_passenger_information").find("table").attr("align", "center");
 
@@ -77,21 +92,21 @@ function initialSeatButtons() {
     var originalSeatTable = $("#original_seat_table");
     originalSeatTable.html("");
     var firstRow = $("<tr>");
-    firstRow.append($("<td>O</td>"))
+    firstRow.append($("<td>O</td>"));
     for (var i = 0; i < colNum; i++) {
         firstRow.append($("<td>" + colTag[i] + "</td>"))
     }
     originalSeatTable.append(firstRow);
     for (var i = 0; i < rowNum; i++) {
         var tableRow = $("<tr>");
-        tableRow.append($("<td>" + rowTag[i] + "</td>"))
+        tableRow.append($("<td>" + rowTag[i] + "</td>"));
         for (var j = 0; j < colNum; j++) {
             var id = String(rowTag[i])+ "-" + colTag[j];
             if (j === 3) {
                 tableRow.append($("<td>||||</td>"));
             } else {
                 tableRow.append($("<td><button class='default'" + " id=" + id + ">"
-                    + "P</button></td>"));
+                    + "O</button></td>"));
             }
         }
         originalSeatTable.append(tableRow);
@@ -100,29 +115,31 @@ function initialSeatButtons() {
     arrangedSeatTable.html("");
     originalSeatTable.find("tr").clone().appendTo(arrangedSeatTable);
 
-    initialHistoryButtons();
-    initialArrangedButtons();
+    initialButtons();
     $("#original_seat").find("button.hasHistory").off("click").on(
         "click", historySeatClickHandler);
 }
 
-function initialHistoryButtons() {
+function initialButtons() {
     var allocationPIDCol = allocationMatrix.map(function(value, index) {return value[0]});
 
     for (var i = 1; i < historyMatrix.length; i++) {
         var buttonObject = $("#original_seat").find("button[id='" +
             historyMatrix[i][2] + "']");
-        buttonObject.attr("class", "hasHistory");
+        buttonObject.attr("class", "hasHistory").text("P");
         if (allocationPIDCol.indexOf(historyMatrix[i][0]) !== -1) {
             buttonObject.addClass("hasData");
+            buttonObject.text(" ");
+            buttonObject.attr("style", "background-image:url("
+                + images[Number(historyMatrix[i][0]) % images.length] + ")");
         }
     }
-}
 
-function initialArrangedButtons() {
     for (var i = 1; i < allocationMatrix.length; i++) {
         var id = getId(allocationMatrix[i][2], allocationMatrix[i][3]);
-        $("#arranged_seat").find("button[id='" + id + "']").attr("class", "hasData");
+        $("#arranged_seat").find("button[id='" + id + "']").attr("class", "hasData")
+            .attr("style", "background-image:url("
+                + images[Number(allocationMatrix[i][0]) % images.length] + ")").text(" ");
     }
 }
 
