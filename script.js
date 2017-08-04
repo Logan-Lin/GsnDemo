@@ -78,6 +78,7 @@ function processPlaneInfoString(infoString) {
     $("#plane_information").html(planeInfoArray.join(", "));
 }
 
+// 初始化座位表，将按钮绘制到座位表格上并分配对应ID
 function initialSeatButtons() {
     rowTag = [];
     for (var i = 0; i < rowNum; i++) {
@@ -120,10 +121,12 @@ function initialSeatButtons() {
         "click", historySeatClickHandler);
 }
 
+// 为符合条件的座位按钮分配事件处理器
 function initialButtons() {
     var allocationPIDCol = allocationMatrix.map(function(value, index) {return value[0]});
     var passengerPIDCol = passengerMatrix.map(function(value, index) {return value[0]});
 
+    // 初始化左侧座位表
     for (var i = 1; i < historyMatrix.length; i++) {
         var buttonObject = $("#original_seat").find("button[id='" +
             historyMatrix[i][2] + "']");
@@ -134,6 +137,7 @@ function initialButtons() {
         }
     }
 
+    // 初始化右侧座位表
     for (var i = 1; i < allocationMatrix.length; i++) {
         var id = getId(allocationMatrix[i][2], allocationMatrix[i][3]);
         var buttonObject = $("#arranged_seat").find("button[id='" + id + "']");
@@ -145,27 +149,31 @@ function initialButtons() {
     }
 }
 
+// 对按下左侧座位表上按钮事件的处理
 function historySeatClickHandler(e) {
     var selectedID = e.target.getAttribute("id");
-    $("table button").removeClass("selected");
-    $(e.target).addClass("selected");
+    $("table button").removeClass("selected"); // 消除其他按钮的选中属性
+    $(e.target).addClass("selected"); // 将按下的按钮（座位）设为选中，效果为边缘变红
 
+    // 取得history矩阵中代表座位位置的一列
     var historySeatIDCol = historyMatrix.map(function(value, index) {return value[2]});
     var historyRowIndex = historySeatIDCol.indexOf(selectedID);
     var selectedPid = historyMatrix[historyRowIndex][0];
 
+    // 取得passenger矩阵中代表用户ID的一列，下同
     var passengerSeatPIDCol = passengerMatrix.map(function(value, index) {return value[0]});
     var passengerRowIndex = passengerSeatPIDCol.indexOf(selectedPid);
 
     var allocationSeatPIDCol = allocationMatrix.map(function(value, index) {return value[0]});
     var allocationRowIndex = allocationSeatPIDCol.indexOf(selectedPid);
-    //displayInformation(historyRowIndex, passengerRowIndex);
 
+    // 展示选中座位上用户的旧座位信息和历史偏好信息
     var selectedIDTable = $("#selected_passenger_information_table");
     var selectedHistoryTable = $("#selected_passenger_history_table");
     displayInfoTable(selectedIDTable, historyMatrix, historyRowIndex, 0);
     displayInfoTable(selectedHistoryTable, passengerMatrix, passengerRowIndex, 1);
 
+    // 展示选中座位上用户的新座位的信息
     var selectedAllocationTable = $("#selected_passenger_allocation_table");
     selectedAllocationTable.html("");
     if (allocationRowIndex !== -1) {
@@ -175,6 +183,7 @@ function historySeatClickHandler(e) {
                 allocationMatrix[allocationRowIndex][3]) + "']").addClass("selected");
     }
 
+    // 展示选中座位上用户的关系信息，以及绘制关系图。
     var relationMatrixPIDCol = relationMatrix.map(function(value, index) {return value[0]});
     var relationRowIndexes = getAllIndexes(relationMatrixPIDCol, selectedPid);
     var selectedRelationTable = $("#selected_passenger_relation_table");
@@ -201,26 +210,23 @@ function historySeatClickHandler(e) {
 
         var graphics = Viva.Graph.View.svgGraphics();
         graphics.node(function(node) {
-            // The function is called every time renderer needs a ui to display node
             return Viva.Graph.svg('image')
                 .attr('width', 50)
                 .attr('height', 50)
-                .link(node.data.url); // node.data holds custom object passed to graph.addNode();
-        })
-            .placeNode(function(nodeUI, pos){
-                // Shift image to let links go to the center:
+                .link(node.data.url);
+        }).placeNode(function(nodeUI, pos){
                 nodeUI.attr('x', pos.x - 12).attr('y', pos.y - 12);
-            });
+        });
 
-        var renderer = Viva.Graph.View.renderer(relationGraph,
-            {
+        var renderer = Viva.Graph.View.renderer(relationGraph, {
                 container: graphElement,
                 graphics: graphics
-            });
+        });
         renderer.run();
     }
 }
 
+// 给出表格对象、信息所在矩阵和用户所在行数以及信息开始的列数，即可在表格内展示相应信息
 function displayInfoTable(tableObject, infoMatrix, rowIndex, infoStartColIndex) {
     tableObject.html("");
     var row1 = $("<tr>");
@@ -233,6 +239,7 @@ function displayInfoTable(tableObject, infoMatrix, rowIndex, infoStartColIndex) 
     tableObject.append(row2);
 }
 
+// 得到某个值在数组中的全部出现位置
 function getAllIndexes(arr, val) {
     var indexes = [], i = -1;
     while ((i = arr.indexOf(val, i+1)) !== -1){
@@ -241,6 +248,7 @@ function getAllIndexes(arr, val) {
     return indexes;
 }
 
+// 输入代表行和列的字符串，得到格式类似"13-D"的座位ID
 function getId(rowStr, colStr) {
     var temColTag = [];
     for (var i = 0; i < 3; i++) {
@@ -252,6 +260,7 @@ function getId(rowStr, colStr) {
     return rowStr + "-" + temColTag[Number(colStr) - 1];
 }
 
+// 处理从TXT读入的信息字符串，切割成矩阵
 function processInfoMatrix(infoString) {
     var lines = infoString.split("\n");
     var infoMatrix = [];
