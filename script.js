@@ -78,18 +78,21 @@ function processPlaneInfoString(infoString) {
     $("#plane_information").html(planeInfoArray.join(", "));
 }
 
-// 初始化座位表，将按钮绘制到座位表格上并分配对应ID
+// Initialize seat table, generate button elements and assign corresponding IDs to them.
 function initialSeatButtons() {
+    // Generate row tags(an range from rowStart to rowStart+rowNum).
     rowTag = [];
     for (var i = 0; i < rowNum; i++) {
         rowTag.push(i + rowStart);
     }
+    // Adjust column tag according to plane type.
     if (type === "9") {
         colTag = ["A", "B", "C", " " , "J", "K", "L"];
     } else if (type === "6") {
         colTag = ["A", "B", "C", " " , "D", "E", "F"];
     }
 
+    // Generate seat buttons in original seat table.
     var originalSeatTable = $("#original_seat_table");
     originalSeatTable.html("");
     var firstRow = $("<tr>");
@@ -112,21 +115,22 @@ function initialSeatButtons() {
         }
         originalSeatTable.append(tableRow);
     }
+    // Just copy all the buttons to the arranged seat table.
     var arrangedSeatTable = $("#arranged_seat_table");
     arrangedSeatTable.html("");
     originalSeatTable.find("tr").clone().appendTo(arrangedSeatTable);
 
     initialButtons();
+    // Assign click handler to the buttons in original seat table that have passenger on it.
     $("#original_seat").find("button.hasHistory").off("click").on(
         "click", historySeatClickHandler);
 }
 
-// 为符合条件的座位按钮分配事件处理器
+// Initialize every buttons' default class and background images.
 function initialButtons() {
     var allocationPIDCol = allocationMatrix.map(function(value, index) {return value[0]});
     var passengerPIDCol = passengerMatrix.map(function(value, index) {return value[0]});
 
-    // 初始化左侧座位表
     for (var i = 1; i < historyMatrix.length; i++) {
         var buttonObject = $("#original_seat").find("button[id='" +
             historyMatrix[i][2] + "']");
@@ -137,7 +141,6 @@ function initialButtons() {
         }
     }
 
-    // 初始化右侧座位表
     for (var i = 1; i < allocationMatrix.length; i++) {
         var id = getId(allocationMatrix[i][2], allocationMatrix[i][3]);
         var buttonObject = $("#arranged_seat").find("button[id='" + id + "']");
@@ -149,41 +152,41 @@ function initialButtons() {
     }
 }
 
-// 对按下左侧座位表上按钮事件的处理
+// Handler for click on seats in original seat table.
 function historySeatClickHandler(e) {
     var selectedID = e.target.getAttribute("id");
-    $("table button").removeClass("selected"); // 消除其他按钮的选中属性
-    $(e.target).addClass("selected"); // 将按下的按钮（座位）设为选中，效果为边缘变红
+    $("table button").removeClass("selected"); // Clear selected class in other buttons.
+    $(e.target).addClass("selected"); // Set the clicked button to selected mode.
 
-    // 取得history矩阵中代表座位位置的一列
+    // Get the column in historyMatrix that represents seat ID.
     var historySeatIDCol = historyMatrix.map(function(value, index) {return value[2]});
     var historyRowIndex = historySeatIDCol.indexOf(selectedID);
     var selectedPid = historyMatrix[historyRowIndex][0];
 
-    // 取得passenger矩阵中代表用户ID的一列，下同
+    // Get the column in passengerMatrix that represents user ID.
     var passengerSeatPIDCol = passengerMatrix.map(function(value, index) {return value[0]});
     var passengerRowIndex = passengerSeatPIDCol.indexOf(selectedPid);
 
     var allocationSeatPIDCol = allocationMatrix.map(function(value, index) {return value[0]});
     var allocationRowIndex = allocationSeatPIDCol.indexOf(selectedPid);
 
-    // 展示选中座位上用户的旧座位信息和历史偏好信息
+    // Display information about the passenger on the selected seat.
     var selectedIDTable = $("#selected_passenger_information_table");
     var selectedHistoryTable = $("#selected_passenger_history_table");
     displayInfoTable(selectedIDTable, historyMatrix, historyRowIndex, 0);
     displayInfoTable(selectedHistoryTable, passengerMatrix, passengerRowIndex, 1);
 
-    // 展示选中座位上用户的新座位的信息
     var selectedAllocationTable = $("#selected_passenger_allocation_table");
     selectedAllocationTable.html("");
     if (allocationRowIndex !== -1) {
         displayInfoTable(selectedAllocationTable, allocationMatrix, allocationRowIndex, 1);
+        // Set the corresponding seat in the arranged seat table to selected mode.
         $("#arranged_seat_table").find("button[id='" +
             getId(allocationMatrix[allocationRowIndex][2],
                 allocationMatrix[allocationRowIndex][3]) + "']").addClass("selected");
     }
 
-    // 展示选中座位上用户的关系信息，以及绘制关系图。
+    // Display the relationship information about the passenger on the selected seat and draw relation graph.
     var relationMatrixPIDCol = relationMatrix.map(function(value, index) {return value[0]});
     var relationRowIndexes = getAllIndexes(relationMatrixPIDCol, selectedPid);
     var selectedRelationTable = $("#selected_passenger_relation_table");
@@ -226,7 +229,6 @@ function historySeatClickHandler(e) {
     }
 }
 
-// 给出表格对象、信息所在矩阵和用户所在行数以及信息开始的列数，即可在表格内展示相应信息
 function displayInfoTable(tableObject, infoMatrix, rowIndex, infoStartColIndex) {
     tableObject.html("");
     var row1 = $("<tr>");
@@ -239,7 +241,6 @@ function displayInfoTable(tableObject, infoMatrix, rowIndex, infoStartColIndex) 
     tableObject.append(row2);
 }
 
-// 得到某个值在数组中的全部出现位置
 function getAllIndexes(arr, val) {
     var indexes = [], i = -1;
     while ((i = arr.indexOf(val, i+1)) !== -1){
@@ -248,7 +249,6 @@ function getAllIndexes(arr, val) {
     return indexes;
 }
 
-// 输入代表行和列的字符串，得到格式类似"13-D"的座位ID
 function getId(rowStr, colStr) {
     var temColTag = [];
     for (var i = 0; i < 3; i++) {
@@ -260,7 +260,6 @@ function getId(rowStr, colStr) {
     return rowStr + "-" + temColTag[Number(colStr) - 1];
 }
 
-// 处理从TXT读入的信息字符串，切割成矩阵
 function processInfoMatrix(infoString) {
     var lines = infoString.split("\n");
     var infoMatrix = [];
@@ -270,18 +269,3 @@ function processInfoMatrix(infoString) {
     }
     return infoMatrix;
 }
-
-// function allocatedSeatClickHandler(e) {
-//     var selectedID = e.target.getAttribute("id");
-//     $("table button").removeClass("selected");
-//     $(e.target).addClass("selected");
-//
-//     var seatStringArray = selectedID.split("-");
-//     var temColTag = [];
-//     for (var i = 0; i < 3; i++) {
-//         temColTag.push(colTag[i])
-//     }
-//     for (i = 4; i < colNum; i++) {
-//         temColTag.push(colTag[i]);
-//     }
-// }
