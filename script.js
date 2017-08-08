@@ -144,8 +144,8 @@ function initialButtons() {
     for (var i = 1; i < allocationMatrix.length; i++) {
         var id = getId(allocationMatrix[i][2], allocationMatrix[i][3]);
         var buttonObject = $("#arranged_seat").find("button[id='" + id + "']");
-        buttonObject.attr("class", "hasHistory");
-        if (Number(passengerMatrix[passengerPIDCol.indexOf(allocationMatrix[i][0])]) !== 0) {
+        buttonObject.attr("class", "hasHistory").text("P");
+        if (Number(passengerMatrix[passengerPIDCol.indexOf(allocationMatrix[i][0])][1]) !== 0) {
             buttonObject.addClass("hasData").attr("style", "background-image:url("
                 + images[Number(allocationMatrix[i][0]) % images.length] + ")").text(" ");
         }
