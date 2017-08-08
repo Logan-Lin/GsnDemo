@@ -28,7 +28,6 @@ body {
 }
 
 button {
-    background-color: #eaf3da;
     background-size: 30px auto;
     border-width: 3px;
 }
@@ -40,11 +39,10 @@ button.hasHistory {
 
 button.hasData {
     background-color: #6c65cc;
-    color: white;
 }
 
 button.default {
-    background-color: #eaf3da;
+    background-color: #f3f3e5;
     color: black;
 }
 
@@ -55,7 +53,7 @@ button.selected {
 }
 
 button.related {
-    border: 3px solid yellow;
+    border: 3px solid #00ff0c;
 }
 
 #graph {
