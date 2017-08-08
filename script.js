@@ -10,23 +10,15 @@ var historyMatrix = [];
 var passengerMatrix = [];
 var allocationMatrix = [];
 
-var images = ["https://avatars2.githubusercontent.com/u/1667267?v=4&s=460",
-    "https://avatars2.githubusercontent.com/u/2766936?v=4&s=460",
-    "https://avatars1.githubusercontent.com/u/1794099?v=4&s=460",
-    "https://avatars2.githubusercontent.com/u/1487073?v=4&s=460",
-    "https://avatars2.githubusercontent.com/u/4674940?v=4&s=460",
-    "https://avatars1.githubusercontent.com/u/981645?v=4&s=460",
-    "https://avatars1.githubusercontent.com/u/927168?v=4&s=460",
-    "https://avatars3.githubusercontent.com/u/1271349?v=4&s=460",
-    "https://avatars1.githubusercontent.com/u/467807?v=4&s=460",
-    "https://avatars0.githubusercontent.com/u/403637?v=4&s=460",
-    "https://avatars3.githubusercontent.com/u/9321270?v=4&s=460",
-    "https://avatars2.githubusercontent.com/u/11205194?v=4&s=460",
-    "https://avatars3.githubusercontent.com/u/13667174?v=4&s=460",
-    "https://avatars1.githubusercontent.com/u/13401724?v=4&s=460"];
+var images = [];
 
 $(document).ready(function() {
+    for (var i = 0; i < 28; i++) {
+        images.push("pictures/pic" + String(i + 1) + ".png");
+    }
+
     $("#selected_passenger_information").find("table").attr("align", "center");
+    $("#relation_graph").find("table").attr("align", "center");
 
     $("#file_input_button").on("click", function() {
         type = $("input[name='type']:checked").attr("id");
@@ -155,11 +147,12 @@ function initialButtons() {
 // Handler for click on seats in original seat table.
 function historySeatClickHandler(e) {
     var selectedID = e.target.getAttribute("id");
-    $("table button").removeClass("selected"); // Clear selected class in other buttons.
+    $("table button").removeClass("selected").removeClass("related"); // Clear selected class in other buttons.
     $(e.target).addClass("selected"); // Set the clicked button to selected mode.
 
     // Get the column in historyMatrix that represents seat ID.
     var historySeatIDCol = historyMatrix.map(function(value, index) {return value[2]});
+    var historySeatPIDCol = historyMatrix.map(function(value, index) {return value[0]});
     var historyRowIndex = historySeatIDCol.indexOf(selectedID);
     var selectedPid = historyMatrix[historyRowIndex][0];
 
@@ -196,11 +189,26 @@ function historySeatClickHandler(e) {
     $(graphElement).html("");
     if (relationRowIndexes.length > 0) {
         var relationRow = $("<tr>");
+        var relationWeightRow = $("<tr>");
         relationRow.append($("<td>Related person</td>"));
+        relationWeightRow.append($("<td>Relation Weight</td>"));
         for (var i = 0; i < relationRowIndexes.length; i++) {
-            relationRow.append($("<td>" + relationMatrix[relationRowIndexes[i]][1] + "</td>"));
+            relationRow.append($("<td>" + "<img src='"
+                + images[Number(relationMatrix[relationRowIndexes[i]][1]) % images.length]
+                + "' width='60' height='60'><br>"
+                + relationMatrix[relationRowIndexes[i]][1] + "</td>"));
+            relationWeightRow.append($("<td>" + relationMatrix[relationRowIndexes[i]][2] + "</td>"));
+
+            var relatedAllocationIndex = allocationSeatPIDCol.indexOf(relationMatrix[relationRowIndexes[i]][1]);
+            var id = getId(allocationMatrix[relatedAllocationIndex][2], allocationMatrix[relatedAllocationIndex][3]);
+            $("#arranged_seat_table").find("button[id='" + id + "']").addClass("related");
+
+            var relatedHistoryIndex = historySeatPIDCol.indexOf(relationMatrix[relationRowIndexes[i]][1]);
+            id = historyMatrix[relatedHistoryIndex][2];
+            $("#original_seat_table").find("button[id='" + id + "']").addClass("related");
         }
         selectedRelationTable.append(relationRow);
+        selectedRelationTable.append(relationWeightRow);
 
         var relationGraph = Viva.Graph.graph();
         relationGraph.addNode(selectedPid, {url: images[Number(selectedPid) % images.length]});
@@ -218,12 +226,12 @@ function historySeatClickHandler(e) {
                 .attr('height', 50)
                 .link(node.data.url);
         }).placeNode(function(nodeUI, pos){
-                nodeUI.attr('x', pos.x - 12).attr('y', pos.y - 12);
+                nodeUI.attr('x', pos.x - 20).attr('y', pos.y - 20);
         });
 
         var renderer = Viva.Graph.View.renderer(relationGraph, {
-                container: graphElement,
-                graphics: graphics
+            container: graphElement,
+            graphics: graphics
         });
         renderer.run();
     }

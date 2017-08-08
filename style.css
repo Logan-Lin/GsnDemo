@@ -54,6 +54,10 @@ button.selected {
     color: white;
 }
 
+button.related {
+    border: 3px solid yellow;
+}
+
 #graph {
     text-align: center;
 }
